@@ -1,13 +1,14 @@
 package main
 
 import (
-	"crypto"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
 	"flag"
 	"io/ioutil"
 	"log"
+
+	"shaverifier/pkg/verify"
 )
 
 func main() {
@@ -56,12 +57,10 @@ func main() {
 	// To verify the signature, we provide the public key, the hashing algorithm
 	// the hash sum of our message and the signature we generated previously
 	// there is an optional "options" parameter which can omit for now
-	err = rsa.VerifyPSS(rsakey, crypto.SHA256, msgHashSum, signature, nil)
-	if err != nil {
-		log.Println("could not verify signature: ", err)
-		return
-	}
+
 	// If we don't get any error from the `VerifyPSS` method, that means our
 	// signature is valid
-	log.Println("signature verified")
+	if verify.Verify(rsakey, msgHashSum, signature) {
+		log.Println("signature verified")
+	}
 }
